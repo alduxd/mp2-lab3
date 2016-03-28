@@ -34,18 +34,24 @@ Stack<T>::~Stack()
 {
     delete [] array; 
 }
+
+
 template <typename T>
 void Stack<T>::push(const T &val)
 {
 	if (top+1>=size) throw "Stack is full";
 	array[++top] = val; 
 }
+
+
 template <typename T>
 T Stack<T>::pop()
 { 
 	if (top<0) throw "Stack is empty"; 
 	return array[top--];
 }
+
+
 template <class T>
 const T &Stack<T>::peek() const
 {
@@ -53,11 +59,13 @@ const T &Stack<T>::peek() const
 	return array[top]; 
 }
 
+
 template <typename T>
 int Stack<T>::getSize() const
 {
     return size;
 }
+
 
 template <typename T>
 int Stack<T>::getTop() const

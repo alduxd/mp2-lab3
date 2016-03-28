@@ -107,7 +107,7 @@ string Postfix::Convert(string infix)
 	return polish; 
 }
 
-double Postfix::Result(string polish)
+double Postfix::Result(string polish) // вычисление результата
 {
 	double res=0;
 	int len = polish.length();
