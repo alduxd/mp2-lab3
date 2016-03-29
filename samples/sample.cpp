@@ -4,7 +4,7 @@ int main()
 {
 	try
 	{
-		cout << "Enter the arithmetic expression"<< endl;
+		cout << "Enter an arithmetic expression:"<< endl;
 
 		Postfix Convertor;
 		string Expression;
