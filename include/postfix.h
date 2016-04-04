@@ -9,10 +9,14 @@ using namespace std;
 
 class Postfix
 {
+	string s;
 public:
-	string Convert(string input);	// перевод инфиксной формы в постфиксную
-    double Result(string input);	// подсчёт результата 
-	int IsOperator(char c);			// проверка на операцию
-	int GetOperationPrt(char c);	// определение приоритета операции
+	Postfix(string = "");
+	string Convert();	// Перевод инфиксной формы в постфиксную
+	double Result();	// Вычисление результата 
+private:
+	void Validation();	// Валидация исходного выражения
+	int IsOperator(char с);	// Проверка на операцию
+	int GetOperationPrt(char с);	// Определение приоритета операции
 };
 #endif

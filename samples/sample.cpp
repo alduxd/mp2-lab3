@@ -6,22 +6,22 @@ int main()
 	{
 		cout << "Enter an arithmetic expression:"<< endl;
 
-		Postfix Convertor;
-		string Expression;
 		string row;
+		cin >> row;
+		string expression(row);
+		Postfix calculate(expression);
+		string polishform = calculate.Convert();
+		double result = calculate.Result();
 
-		cin >> Expression;
-
-		string PolishExpression = Convertor.Convert(Expression);
-		double result = Convertor.Result(PolishExpression);
-		cout << "Expression: " << Expression << endl;
-		cout << "Postfix form: " << PolishExpression << endl;
+		cout << "Expression: " << expression<< endl;
+		cout << "Postfix form: " << polishform << endl;
 		cout << "Result: " << result << endl;
 	}
 
 	catch (const char* error)
 	{
-		cout<<error<<endl;
+		cout << error << endl;
 	}
+
 	return 0;
 }

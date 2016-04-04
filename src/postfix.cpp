@@ -1,13 +1,51 @@
 ﻿#include "postfix.h"
 
-int Postfix::IsOperator(char c)     // проверка на операцию
+Postfix::Postfix(string s_)
 {
-	if (c=='+' || c=='-' || c=='*' || c=='/' || c=='^' || c=='('|| c==')') return 1;
-	else if (c==' ' || c=='=') return 2;
-	else return 0;
+	s = s_;
+	Validation();
 }
 
-int Postfix::GetOperationPrt(char c)  // определение приоритета операции
+
+void Postfix::Validation()
+{
+	string infix = this->s;
+	int length = infix.length(), count1 = 0, count2 = 0;
+	bool flag = true;
+
+	for (int i = 0; i < length; i++)
+	{
+		if ((!isdigit(infix[i])) && (!IsOperator(infix[i])))	// Проверка на посторонние символы
+			throw "Error! Invalid character";
+
+		if (isdigit(infix[i]))	// Проверка на содержание цифр
+			flag = false;
+
+		if ((infix[i]) == '(') count1++;	//Проверка соответствия скобок
+		if ((infix[i]) == ')') count2++;
+
+		if (strchr("+-/*^", infix[i]) != NULL && strchr("+-/*^", infix[i + 1]) != NULL && i < length - 1)	// Проверка на идущие подряд операции
+			throw "Error! Operations are not consistent.";
+	}
+	if (flag == true)
+		throw "Error! The expression does not contain numbers.";
+	if (count1 != count2)
+		throw "Error! Not agreed number of brackets.";
+}
+
+
+int Postfix::IsOperator(char c)
+{
+	if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '(' || c == ')')
+		return 1;
+	else if (c == ' ' || c == '=')
+		return 2;
+	else
+		return 0;
+}
+
+
+int Postfix::GetOperationPrt(char c)
 {
 	switch (c)
 	{
@@ -22,145 +60,143 @@ int Postfix::GetOperationPrt(char c)  // определение приорите
 	}
 }
 
-string Postfix::Convert(string infix)
+string Postfix::Convert()
 {
-	int len = infix.length();
-	string polish;                   // Строка для обратной польской записи
-	Stack<char> OperationStack(len); // Стек для операторов
-	bool var = true;
-	int count1=0,count2=0;
+	string infix = this->s;
+	string postfix;
+	int length = infix.length();
+	Stack<char> operatorstack(length);
 
-	for (int i=0;i<len;i++)         // Проверка на правильный ввод
+	for (int i = 0; i < length; i++)
 	{
-		
-		if ((!isdigit(infix[i])) && (!IsOperator(infix[i]))) // Проверяем есть ли посторонние символы
-			throw "Error! Invalid character" ;
-		
-		if (isdigit(infix[i])) var = false; // Проверяем: выражение не может быть без цифр
-		
-		if ((infix[i])=='(') count1++; // Проверяем: кол-во '(' и ')' должно быть равно
-		if ((infix[i])==')') count2++;
-	
-		if (strchr("+-/*^", infix[i])!=NULL && strchr("+-/*^", infix[i+1])!=NULL && i<len-1) 	// Проверяем: орерации не могут быть друг за другом
-			throw "Error! Operations are not consistent" ;
-	}
+		if ((i == 1) && (infix[0] == '-')) 	// Если в начале минус, добавляем его в выходную строку
+			postfix = "-";
 
-	if (var == true) throw "Error! The expression does not contain numbers" ;
-	if (count1!=count2) throw "Error! Not agreed number of brackets" ;
+		if ((IsOperator(infix[i])) == 2) 	// Если пробел или равно, пропускаем символ
+			continue;
 
-	for (int i=0;i<len;i++) 
-	{
-		if ((i==1) && (infix[0]=='-')) polish="-"; // Если в начале минус
-		if ((IsOperator(infix[i]))==2) continue;   // Если пробел или равно, пропускаем
-		if (isdigit(infix[i]))                     // Если цифра,
+		if (isdigit(infix[i]))	// Если цифра, помещаем все число в выходну строку
 		{
-			while (!IsOperator(infix[i]))          // считываем всё число
+			while (!IsOperator(infix[i]))
 			{
-				polish+=infix[i++]; 
-				if (i==len) break;
+				postfix += infix[i++];
+				if (i == length)
+					break;
 			}
-			polish.push_back(' ');                 // добавляем пробел после числа
+			postfix.push_back(' ');
 			i--;
 		}
-		if ((IsOperator(infix[i]))==1)             // если операция или скобки
-			if (infix[i] == '(' && infix[i+1] == '-' && i<len-2)  // Если '-' после '('
+
+		if ((IsOperator(infix[i])) == 1)	// Если скобки или опереатор
+		{
+			if (infix[i] == '(' && infix[i + 1] == '-' && i < length) // Если отрицательное число после скобки
 			{
-				i=i+2;
+				operatorstack.push(infix[i]);
+				i = i + 2;
 				if (isdigit(infix[i]))
 				{
-					polish.push_back('-');
+					postfix.push_back('-');
 					while (!IsOperator(infix[i]))
 					{
-						polish+=infix[i++]; 
-						if (i==len) break;
+						postfix.push_back( infix[i++]);
+						if (i == length)
+							break;
 					}
-					polish.push_back(' ');
+					postfix.push_back(' ');
 				}
 			}
-			else if (infix[i]=='(') OperationStack.push(infix[i]); 
-			else if (infix[i]==')') 
-			{
-				char s = OperationStack.pop();
-				while (s != '(')
+
+			if (infix[i] == '(' && infix[i + 1] != '-')	// Если просто открывающая скобка
+					operatorstack.push(infix[i]);
+
+			if (infix[i] == ')')	// Если закрывающа скобка
 				{
-					polish.push_back(s);
-					polish.push_back(' ');
-					s=OperationStack.pop();
-				}
+					char s = operatorstack.pop();
+					while (s != '(')
+					{
+						postfix.push_back(s);
+						postfix.push_back(' ');
+						s = operatorstack.pop();
+					}
 			}
-			else if (i!=0) // если не минус в начале
+
+			if ((infix[i] == '+')|| (infix[i] == '-')||(infix[i] == '*')|| (infix[i] == '/')|| (infix[i] == '^'))
 			{
-				while ((OperationStack.getTop()>-1) && (GetOperationPrt(infix[i])<=GetOperationPrt(OperationStack.peek())))
+				while ((operatorstack.getTop() > -1) && (GetOperationPrt(infix[i]) <= GetOperationPrt(operatorstack.peek())))
 				{
-					polish.push_back(OperationStack.pop());
-					polish.push_back(' ');
+					postfix.push_back(operatorstack.pop());
+					postfix.push_back(' ');
 				}
-				OperationStack.push(infix[i]);
+				operatorstack.push(infix[i]);
 			}
+		}
 	}
-	//Когда прошли по всем символам, выкидываем из стека все оставшиеся там операторы в строку
-	while (OperationStack.getTop()>-1)
+
+	while (operatorstack.getTop() > -1)	//После того, как прошли по всем символам, выкидываем из стека оставшиеся операторы в выходную строку
 	{
-		polish.push_back(OperationStack.pop());
-		polish.push_back(' ');
+		postfix.push_back(operatorstack.pop());
+		postfix.push_back(' ');
 	}
-	return polish; 
+
+	return postfix;
 }
 
-double Postfix::Result(string polish) // вычисление результата
+double Postfix::Result()	// Вычисление результата
 {
-	double res=0;
-	int len = polish.length();
-	Stack<double> ResultStack(len);
-	for (int i=0;i<len;i++) 
+	string postfix = this->Convert();
+	double result = 0;
+	int length = postfix.length();
+	Stack<double> ResultStack(length);
+
+	for (int i = 0; i < length; i++)
 	{
-		//Если цифра, то читаем все число и толкаем на вершину стека
-		if (isdigit(polish[i])) 
+		if (isdigit(postfix[i]))	//Если цифра, помещаем все число в стек
 		{
 			string str;
 			double op;
-			while (!IsOperator(polish[i])) 
+			while (!IsOperator(postfix[i]))
 			{
-				str+=polish[i++]; 
-				if (i==len) break;
+				str += postfix[i++];
+				if (i == length) break;
 			}
-			istringstream(str)>>op;
-			ResultStack.push(op); 
+			istringstream(str) >> op;
+			ResultStack.push(op);
 			i--;
 		}
-		// Если встречен минус
-		if (polish[i]=='-' && isdigit(polish[i+1]) && i<len-1)
+
+		if (postfix[i] == '-' && isdigit(postfix[i + 1]) && i < length - 1)	// Если минус
 		{
-			i=i+1;
+			i = i + 1;
 			string str;
 			double op;
-			while (!IsOperator(polish[i])) 
+			while (!IsOperator(postfix[i]))
 			{
-				str+=polish[i++]; 
-				if (i==len) break;
+				str += postfix[i++];
+				if (i == length) break;
 			}
-			istringstream(str)>>op;
-			ResultStack.push(-op); 
+			istringstream(str) >> op;
+			ResultStack.push(-op);
 			i--;
 		}
-		else if (((IsOperator(polish[i]))==1) && (i!=0))
+		else if (((IsOperator(postfix[i])) == 1) && (i != 0))
 		{
-			double op1=ResultStack.pop(); 
-			double op2=ResultStack.pop();
-			switch (polish[i])
-			{ 
-			case '+': res = op2 + op1; break;
-			case '-': res = op2 - op1; break;
-			case '*': res = op2 * op1; break;
-			case '/': 
-				if (op1!=0)
+			double op1 = ResultStack.pop();
+			double op2 = ResultStack.pop();
+			switch (postfix[i])
+			{
+			case '+': result = op2 + op1; break;
+			case '-': result = op2 - op1; break;
+			case '*': result = op2 * op1; break;
+			case '/':
+				if (op1 != 0)
 				{
-					res = op2 / op1; break;
+					result = op2 / op1; break;
 				}
-				else throw "Division by 0!";
-			case '^': res = pow(op2,op1); break;
+				else
+					throw "Error! Division by 0.";
+			case '^': result = pow(op2, op1); break;
 			}
-			ResultStack.push(res); 
+			ResultStack.push(result);
 		}
 	}
 	return ResultStack.peek();
