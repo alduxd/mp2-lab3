@@ -1,3 +1,0 @@
-﻿C:\Program Files (x86)\MSBuild\14.0\bin\Microsoft.Common.CurrentVersion.targets(1610,5): warning : The referenced project '..\postfix_notation\postfix_notation.vcxproj' does not exist.
-  sample.cpp
-  sample.vcxproj -> C:\Users\alduxd\Documents\Visual Studio 2015\Projects\mp2-lab3\sln\vc14\postfix\Debug\sample.exe

@@ -36,6 +36,7 @@ void Postfix::Validation()
 
 int Postfix::IsOperator(char c)
 {
+
 	if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '(' || c == ')')
 		return 1;
 	else if (c == ' ' || c == '=')
@@ -66,25 +67,27 @@ string Postfix::Convert()
 	string postfix;
 	int length = infix.length();
 	Stack<char> operatorstack(length);
-
 	for (int i = 0; i < length; i++)
 	{
-		if ((i == 1) && (infix[0] == '-')) 	// Если в начале минус, добавляем его в выходную строку
-			postfix = "-";
 
 		if ((IsOperator(infix[i])) == 2) 	// Если пробел или равно, пропускаем символ
 			continue;
 
+		if ((i == 0) && (infix[0] == '-')) 	// Если в начале минус, добавляем его в выходную строку
+			postfix = "-";
+
 		if (isdigit(infix[i]))	// Если цифра, помещаем все число в выходну строку
 		{
-			while (!IsOperator(infix[i]))
+			int t = i;
+			while (!IsOperator(infix[t]))
 			{
-				postfix += infix[i++];
-				if (i == length)
+				postfix += infix[t++];
+				
+				if (t == length)
 					break;
 			}
 			postfix.push_back(' ');
-			i--;
+			
 		}
 
 		if ((IsOperator(infix[i])) == 1)	// Если скобки или опереатор
@@ -98,7 +101,7 @@ string Postfix::Convert()
 					postfix.push_back('-');
 					while (!IsOperator(infix[i]))
 					{
-						postfix.push_back( infix[i++]);
+						postfix.push_back(infix[i++]);
 						if (i == length)
 							break;
 					}
@@ -106,29 +109,36 @@ string Postfix::Convert()
 				}
 			}
 
-			if (infix[i] == '(' && infix[i + 1] != '-')	// Если просто открывающая скобка
-					operatorstack.push(infix[i]);
-
-			if (infix[i] == ')')	// Если закрывающа скобка
-				{
-					char s = operatorstack.pop();
-					while (s != '(')
-					{
-						postfix.push_back(s);
-						postfix.push_back(' ');
-						s = operatorstack.pop();
-					}
+			else if (infix[i] == '(')	// Если просто открывающая скобка
+			{
+				operatorstack.push(infix[i]);
 			}
 
-			if ((infix[i] == '+')|| (infix[i] == '-')||(infix[i] == '*')|| (infix[i] == '/')|| (infix[i] == '^'))
+			if ((infix[i] == '+') || (infix[i] == '-') || (infix[i] == '*') || (infix[i] == '/') || (infix[i] == '^'))
 			{
+					
 				while ((operatorstack.getTop() > -1) && (GetOperationPrt(infix[i]) <= GetOperationPrt(operatorstack.peek())))
 				{
 					postfix.push_back(operatorstack.pop());
 					postfix.push_back(' ');
 				}
+				
 				operatorstack.push(infix[i]);
+				
 			}
+
+			if (infix[i] == ')')	// Если закрывающа скобка
+			{
+				char s = operatorstack.pop();
+				while (s != '(')
+				{
+					postfix.push_back(s);
+					postfix.push_back(' ');
+					s = operatorstack.pop();
+				}
+			}
+
+		
 		}
 	}
 
@@ -138,8 +148,18 @@ string Postfix::Convert()
 		postfix.push_back(' ');
 	}
 
+	if (infix[0] == '-')
+	{
+
+		for (int j = 2; j < postfix.length() - 2; j++)
+			postfix[j] = postfix[j + 2];
+			postfix.pop_back();
+			postfix.pop_back();
+	}
+
 	return postfix;
 }
+
 
 double Postfix::Result()	// Вычисление результата
 {

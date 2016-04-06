@@ -1,4 +1,4 @@
-#ifndef _STACK_H_
+п»ї#ifndef _STACK_H_
 #define _STACK_H_
 
 #define MaxSize 100
@@ -7,46 +7,46 @@ template <typename T>
 class Stack
 {
 private:
-    T *array;                      
-    const int size;                   
-    int top;                          
+	T *array;
+	const int size;
+	int top;
 public:
-	Stack(int s=15);	// Конструктор инициализации
-    ~Stack();	// Деструктор   
-    void push(const T &val );	// Положить элемент в стек
-	T pop();	// Взять элемент из стека
-    const T &peek();	// Показать верхушку стека
-	int getSize();	//Получить размер стека
-    int getTop();	//Получить номер текущего элемента
+	Stack(int s = 15);	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
+	~Stack();	// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ   
+	void push(const T &val);	// РџРѕР»РѕР¶РёС‚СЊ СЌР»РµРјРµРЅС‚ РІ СЃС‚РµРє
+	T pop();	// Р’Р·СЏС‚СЊ СЌР»РµРјРµРЅС‚ РёР· СЃС‚РµРєР°
+	const T &peek();	// РџРѕРєР°Р·Р°С‚СЊ РІРµСЂС…СѓС€РєСѓ СЃС‚РµРєР°
+	int getSize();	//РџРѕР»СѓС‡РёС‚СЊ СЂР°Р·РјРµСЂ СЃС‚РµРєР°
+	int getTop();	//РџРѕР»СѓС‡РёС‚СЊ РЅРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р°
 };
 
 template <typename T>
-Stack<T>::Stack(int s):size(s), top(-1)
+Stack<T>::Stack(int s) :size(s), top(-1)
 {
 	if (size>MaxSize) throw "Error! Size must be <=100";
 	if (size<0) throw "Error! Size must be >=0";
-    array = new T[size]; 
+	array = new T[size];
 }
 
 template <typename T>
 Stack<T>::~Stack()
 {
-    delete [] array; 
+	delete[] array;
 }
 
 
 template <typename T>
 void Stack<T>::push(const T &val)
 {
-	if (top+1>=size) throw "Error! Stack is full";
-	array[++top] = val; 
+	if (top + 1 >= size) throw "Error! Stack is full";
+	array[++top] = val;
 }
 
 
 template <typename T>
 T Stack<T>::pop()
-{ 
-	if (top<0) throw "Error! Stack is empty"; 
+{
+	if (top<0) throw "Error! Stack is empty";
 	return array[top--];
 }
 
@@ -55,21 +55,21 @@ template <class T>
 const T &Stack<T>::peek()
 {
 	if (top<0) throw "Error! Stack is empty";
-	return array[top]; 
+	return array[top];
 }
 
 
 template <typename T>
 int Stack<T>::getSize()
 {
-    return size;
+	return size;
 }
 
 
 template <typename T>
 int Stack<T>::getTop()
 {
-    return top;
+	return top;
 }
 
 #endif
