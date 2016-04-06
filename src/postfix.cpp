@@ -148,11 +148,13 @@ string Postfix::Convert()
 		postfix.push_back(' ');
 	}
 
-	if (infix[0] == '-') 
-	{ 
-		
-		for (int j = 3; j < postfix.length() - 1; j++)
-			postfix[j] = postfix[j + 1];
+	if (infix[0] == '-')
+	{
+
+		for (int j = 2; j < postfix.length() - 2; j++)
+			postfix[j] = postfix[j + 2];
+			postfix.pop_back();
+			postfix.pop_back();
 	}
 
 	return postfix;
